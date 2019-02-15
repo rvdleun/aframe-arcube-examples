@@ -1,0 +1,64 @@
+<!doctype HTML>
+<html>
+<head>
+    <script src="../vendor/aframe.min.js"></script>
+    <script src="../vendor/aframe-ar.js"> </script>
+    <script src="../vendor/aframe-arcube.min.js"></script>
+    <script>
+        THREEx.ArToolkitContext.baseURL = 'https://rawgit.com/jeromeetienne/ar.js/master/three.js/'
+    </script>
+    <script>
+        AFRAME.registerComponent('play-video', {
+            schema: { type: 'selector' },
+
+            subscription: null,
+            subscriptionFunc: null,
+
+            init: function() {
+                this.subscriptionFunc = () => this.onClick();
+                this.subscription = document.addEventListener('click', this.subscriptionFunc);
+
+                this.data.addEventListener('play', () => {
+                    this.el.setAttribute('visible', false);
+                });
+            },
+
+            remove: function() {
+                document.removeEventListener('click', this.subscriptionFunc);
+            },
+
+            onClick: function() {
+                this.data.play();
+            }
+        });
+    </script>
+</head>
+<body>
+<a-scene embedded arjs='debugUIEnabled: false; sourceType: webcam; detectionMode: mono;' vr-mode-ui="enabled: false">
+    <a-assets>
+        <video id="img-marker-a" src="ARCUBE-presentation-A.mov"></video>
+        <img id="img-marker-r" src="ARCUBE-presentation-R.jpg" />
+        <img id="img-marker-c" src="ARCUBE-presentation-C.jpg" />
+        <img id="img-marker-u" src="ARCUBE-presentation-U.jpg" />
+        <img id="img-marker-b" src="ARCUBE-presentation-B.jpg" />
+        <img id="img-marker-e" src="ARCUBE-presentation-E.jpg" />
+        <img id="play-button" src="play-button.png" />
+    </a-assets>
+    <a-arcube>
+        <a-entity rotation="-90 0 0">
+            <a-entity position="0 0 .5">
+                <a-plane color="black" position="0 0 -0.005" material="alphaTest: 0.3"></a-plane>
+                <a-video src="#img-marker-a" position="0 0 0.015" scale="1 0.53125 1" material="alphaTest: 0.2"></a-video>
+                <a-image position="0 0 0.03" scale=".5 .5 .5" play-video="#img-marker-a" src="#play-button" material="alphaTest: 0.5"></a-image>
+            </a-entity>
+            <a-plane position="-.5 0 0" rotation="0 -90 270" src="#img-marker-e" shader="flat"></a-plane>
+            <a-plane position=".5 0 0" rotation="0 90 90" src="#img-marker-u" shader="flat"></a-plane>
+            <a-plane position="0 -.5 0" rotation="90 0 0" src="#img-marker-c" shader="flat"></a-plane>
+            <a-plane position="0 .5 0" rotation="-90 180 0" src="#img-marker-b" shader="flat"></a-plane>
+            <a-plane position="0 0 -.5" rotation="180 0 180" src="#img-marker-r" shader="flat"></a-plane>
+        </a-entity>
+    </a-arcube>
+    <a-entity camera></a-entity>
+</a-scene>
+</body>
+</html>
