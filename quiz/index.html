@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<head>
+    <script src="../vendor/aframe.min.js"></script>
+    <script src="../vendor/aframe-ar.js"> </script>
+    <script src="../vendor/aframe-arcube.min.js"></script>
+    <script>
+        THREEx.ArToolkitContext.baseURL = 'https://rawgit.com/jeromeetienne/ar.js/master/three.js/'
+    </script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <style>
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            text-align: center;
+            opacity: .66;
+            transition: .5s all;
+        }
+
+        .header .correct {
+            color: green;
+        }
+
+        .header .incorrect {
+            color: darkred;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            z-index: 255;
+            opacity: .66;
+            transition: 2s all;
+        }
+
+        .footer div {
+            float: left;
+            font-size: 24px;
+            min-width: 33%;
+            margin-bottom: 5px;
+            text-align: center;
+            transition: .5s all;
+        }
+
+        .footer.result .correct {
+            color: green;
+            font-weight: bold;
+        }
+
+        .footer.result .incorrect {
+            color: red;
+            text-decoration: line-through;
+        }
+
+        .footer.invisible {
+            bottom: -50px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h2>Loading assets...</h2>
+</div>
+
+<div class="footer invisible">
+    <div class="incorrect">Lung</div>
+    <div class="correct">Heart</div>
+    <div class="incorrect">Kidneys</div>
+</div>
+
+<a-scene embedded arjs='debugUIEnabled: false; sourceType: webcam; detectionMode: mono;' vr-mode-ui="enabled: false">
+    <a-assets>
+        <a-asset-item id="heart" src="heart.gltf"></a-asset-item>
+    </a-assets>
+    <a-arcube>
+        <a-entity rotation="180 0 0">
+            <a-gltf-model src="#heart" position="-0.57225 2.466 -23.6805" scale=".01875 .01875 .01875"></a-gltf-model>
+        </a-entity>
+    </a-arcube>
+
+    <a-entity camera></a-entity>
+</a-scene>
+
+<script>
+    function askQuestion() {
+        document.querySelector('.header').innerHTML = '<h2>What is this?</h2>';
+        document.querySelector('.footer').classList.remove('invisible');
+    }
+
+    let loaded = false;
+    let tracking = false;
+    document.querySelector('a-assets').addEventListener('loaded', () => {
+        loaded = true;
+        if (!tracking) {
+            document.querySelector('.header').innerHTML = '<h2>Point to the AR Cube</h2>';
+        } else {
+            askQuestion();
+        }
+    });
+
+    document.querySelectorAll('.footer div').forEach((button) => {
+        console.log(button);
+        button.addEventListener('click', () => {
+            const correct = button.classList.contains('correct');
+            const header = document.querySelector('.header');
+            if (correct) {
+                header.innerHTML = '<h2 class="correct">Correct!</h2>';
+            } else {
+                header.innerHTML = '<h2 class="incorrect">Incorrect!</h2>';
+            }
+
+            document.querySelector('.footer').classList.add('result');
+            console.log(correct);
+        });
+    });
+
+    setTimeout(() => {
+        const markers = document.querySelectorAll('a-marker');
+        markers.forEach((marker) => {
+            marker.addEventListener('markerFound', () => {
+                if (tracking) {
+                    return;
+                }
+
+                tracking = true;
+
+                if (loaded) {
+                    askQuestion();
+                }
+            });
+        });
+        console.log(markers);
+    });
+</script>
+</body>
+</html>
