@@ -1,0 +1,27 @@
+<!doctype HTML>
+<html>
+<head>
+    <script src="../vendor/aframe.min.js"></script>
+    <script src="../vendor/aframe-ar.js"> </script>
+    <script src="../vendor/aframe-arcube.min.js"></script>
+    <script>
+        THREEx.ArToolkitContext.baseURL = 'https://rawgit.com/jeromeetienne/ar.js/master/three.js/'
+    </script>
+</head>
+<body>
+<a-scene embedded arjs='debugUIEnabled: false; sourceType: webcam; detectionMode: mono;' vr-mode-ui="enabled: false">
+    <a-assets>
+        <img id="earth" src="earth.jpg" />
+        <img id="moon" src="moon.jpg" />
+    </a-assets>
+    <a-arcube>
+        <a-sphere src="#earth">
+            <a-entity animation="property: rotation; from: 0 0 0; to: 0 360 0; ease: linear; loop: true; dur: 30000">
+                <a-sphere position="0 .3 1.5" src="#moon" scale=".2 .2 .2" animation="property: rotation; from: 0 0 0; to: 0 360 0; ease: linear; loop: true; dur: 30000"></a-sphere>
+            </a-entity>
+        </a-sphere>
+    </a-arcube>
+    <a-entity camera></a-entity>
+</a-scene>
+</body>
+</html>
